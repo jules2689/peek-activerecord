@@ -85,9 +85,9 @@ module Peek
               </tr>
             EOS
           end
-          output << "</tbody></table>"
+          output << "</tbody></table></div>"
 
-          response.body += <<~EOF.html_safe
+          output = <<~EOF.html_safe
           <div class="modal fade" id="activeRecordQueriesModal" tabindex="-1" role="dialog" aria-labelledby="activeRecordQueriesModalTitle" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
               <div class="modal-content">
@@ -104,6 +104,8 @@ module Peek
             </div>
           </div>
           EOF
+
+          response.body += output
         end
       end
     end
