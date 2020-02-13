@@ -9,7 +9,7 @@
 #peek-activerecord-modal {
   display: none;
   clear: both;
-  background: #000;
+  background: #fff;
 
   .duration-header {
     max-width: 100px;
@@ -36,6 +36,7 @@
     pre {
       white-space: normal;
       .highlight {
+        background-color: #fff;
         font-family: monospace;
       }
     }

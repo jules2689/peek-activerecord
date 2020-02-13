@@ -53,41 +53,57 @@ module Peek
       def peek_activerecord_append_queries_to_response(queries)
         if response.content_type =~ %r|text/html|
           output = <<-EOS
-            <div class=ar_instrumentation id=peek_activerecord_table>
-            <ul>
-              <li>
-                <ul class=row>
-                  <li class=duration-header>
-                    Duration
-                  </li>
-                  <li class=cached-header>
-                    Cached
-                  </li>
-                  <li class=sql-header>
-                    SQL
-                  </li>
-                </ul>
-              </li>
+            <div class='ar_instrumentation' id='peek_activerecord_table'>
+              <table class='table table-borderless'>
+                <thead>
+                  <tr>
+                    <th class=duration-header>
+                      Duration
+                    </th>
+                    <th class=cached-header>
+                      Cached
+                    </th>
+                    <th class=sql-header>
+                      SQL
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
           EOS
           queries.each do |query|
             output << <<-EOS
-              <li>
-                <ul class=row>
-                  <li class=duration-data>
-                    #{"%.3f" % query.duration}ms
-                  </li>
-                  <li class=cache-data>
-                    #{query.payload[:name] == "CACHE"}
-                  </li>
-                  <li class=sql-data>
-                    #{pygmentized_sql(query.payload[:sql])}
-                  </li>
-                </ul>
-              </li>
+              <tr>
+                <td class=duration-data>
+                  #{"%.3f" % query.duration}ms
+                </td>
+                <td class=cache-data>
+                  #{query.payload[:name] == "CACHE"}
+                </td>
+                <td class=sql-data>
+                  #{pygmentized_sql(query.payload[:sql])}
+                </td>
+              </tr>
             EOS
           end
-          output << "</table>"
-          response.body += "<div id='peek-activerecord-modal'>#{output}</div>".html_safe
+          output << "</tbody></table>"
+
+          response.body += <<~EOF.html_safe
+          <div class="modal modal-xl fade" id="activeRecordQueriesModal" tabindex="-1" role="dialog" aria-labelledby="activeRecordQueriesModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="activeRecordQueriesModalTitle">ActiveRecord Queries</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  #{output}
+                </div>
+              </div>
+            </div>
+          </div>
+          EOF
         end
       end
     end
